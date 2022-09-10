@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const userRouter = require('./userRoutes');
+
 const movieRouter = require('./movieRoutes');
 const { createUser, login } = require('../controllers/usersController');
 const { validateCreateUser, validateLogin } = require('../middlewares/validation');

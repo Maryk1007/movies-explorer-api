@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-// const { regexURL } = require('../helpers/constants');
+const { regexURL } = require('../helpers/constants');
 
 // валидация при добавлении нового пользователя
 const validateCreateUser = celebrate({
@@ -27,9 +27,25 @@ const validateLogin = celebrate({
 
 
   const validateCreateMovie = celebrate({
+    body: Joi.object().keys({
+        country: Joi.string().required(),
+        director: Joi.number().required(),
+        duration: Joi.string().required(),
+        year: Joi.string().required(),
+        description: Joi.string().required(),
+        image: Joi.string().required().regex(RegExp(regexURL)),
+        trailerLink: Joi.string().required().regex(RegExp(regexURL)),
+        thumbnail: Joi.string().required().regex(RegExp(regexURL)),
+        movieId: Joi.number().required(),
+        nameRU: Joi.string().required(),
+        nameEN: Joi.string().required(),
+    }),
   });
 
   const validateDeleteMovie = celebrate({
+    params: Joi.object().keys({
+        id: Joi.string().length(24).hex(),
+      }),
   });
 
   module.exports = {
