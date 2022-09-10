@@ -5,80 +5,80 @@ const NotFoundError = require('../errors/not-found-error');
 
 // получить все фильмы
 module.exports.getMovies = (req, res, next) => {
-    Movie.find({})
-      .then((movies) => {
-        res.send({ data: movies });
-      })
-      .catch(next);
+  Movie.find({})
+    .then((movies) => {
+      res.send({ data: movies });
+    })
+    .catch(next);
 };
 
-  // создать фильм
+// создать фильм
 module.exports.createMovie = (req, res, next) => {
-    const {
-        country,
-        director,
-        duration,
-        year,
-        description,
-        image,
-        trailerLink,
-        thumbnail,
-        movieId,
-        nameRU,
-        nameEN
-    } = req.body;
-    const ownerId = req.user._id;
-    Movie.create({ 
-        country,
-        director,
-        duration,
-        year,
-        description,
-        image,
-        trailerLink,
-        thumbnail,
-        movieId,
-        nameRU,
-        nameEN,
-        owner: ownerId
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+  } = req.body;
+  const ownerId = req.user._id;
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+    owner: ownerId,
+  })
+    .then((movie) => {
+      res.send(movie);
     })
-      .then((movie) => {
-        res.send(movie);
-      })
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(CastError).send({ message: 'Переданы некорректные данные при создании карточки' });
-        } else {
-          next(err);
-        }
-      });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(CastError).send({ message: 'Переданы некорректные данные при создании фильма' });
+      } else {
+        next(err);
+      }
+    });
 };
 
 // удалить сохраненный фильм
 module.exports.deleteMovie = (req, res, next) => {
-    const { movieId } = req.params;
-    const userId = req.user._id;
-    Movie
-      .findById(movieId)
-      .orFail(() => {
-        throw new NotFoundError('Карточка с указанным id не найдена');
-      })
-      .then((movie) => {
-        if (String(userId) !== String(movie.owner._id)) {
-          throw new ForbiddenError('Невозможно удалить чужую карточку');
-        }
-        Movie
-          .findByIdAndRemove(movieId)
-          .then(() => {
-            res.send({ data: movie });
-          })
-          .catch(next);
-      })
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          next(new CastError('Введены некорректные данные'));
-        } else {
-          next(err);
-        }
-      });
-  };
+  const { movieId } = req.params;
+  const userId = req.user._id;
+  Movie
+    .findById(movieId)
+    .orFail(() => {
+      throw new NotFoundError('Фильм с указанным id не найден');
+    })
+    .then((movie) => {
+      if (String(userId) !== String(movie.owner._id)) {
+        throw new ForbiddenError('Невозможно удалить чужой фильм');
+      }
+      Movie
+        .findByIdAndRemove(movieId)
+        .then(() => {
+          res.send({ data: movie });
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new CastError('Введены некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
+};
