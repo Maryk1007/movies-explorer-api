@@ -13,7 +13,11 @@ const router = require('./routes/index');
 const { MONGO_URL, PORT } = require('./helpers/config');
 
 const app = express();
+
+// защита HTTP-заголовков
 app.use(helmet());
+
+// обработка кросс-доменных запросов
 app.use(cors());
 
 app.use(express.json());
