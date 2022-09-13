@@ -5,7 +5,8 @@ const NotFoundError = require('../errors/not-found-error');
 
 // получить все фильмы
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+  Movie.find({ owner })
     .then((movies) => {
       res.send({ data: movies });
     })
@@ -27,7 +28,7 @@ module.exports.createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   } = req.body;
-  const ownerId = req.user._id;
+  const owner = req.user._id;
   Movie.create({
     country,
     director,
@@ -40,7 +41,7 @@ module.exports.createMovie = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
-    owner: ownerId,
+    owner,
   })
     .then((movie) => {
       res.send(movie);
@@ -56,19 +57,19 @@ module.exports.createMovie = (req, res, next) => {
 
 // удалить сохраненный фильм
 module.exports.deleteMovie = (req, res, next) => {
-  const { movieId } = req.params;
-  const userId = req.user._id;
+  const { id } = req.params;
+  const owner = req.user._id;
   Movie
-    .findById(movieId)
+    .findById(id)
     .orFail(() => {
       throw new NotFoundError('Фильм с указанным id не найден');
     })
     .then((movie) => {
-      if (String(userId) !== String(movie.owner._id)) {
+      if (String(owner) !== String(movie.owner._id)) {
         throw new ForbiddenError('Невозможно удалить чужой фильм');
       }
       Movie
-        .findByIdAndRemove(movieId)
+        .findByIdAndRemove(id)
         .then(() => {
           res.send({ data: movie });
         })

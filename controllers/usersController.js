@@ -65,11 +65,7 @@ module.exports.getMe = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new CastError('Введен некорректный id пользователя'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
@@ -89,6 +85,8 @@ module.exports.updateUser = (req, res, next) => {
         res.status(NotFoundError).send({ message: 'Запрашиваемый пользователь не найден' });
       } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new CastError('Введены некорректные данные пользователя'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь с указанным email уже существует'));
       } else {
         next(err);
       }

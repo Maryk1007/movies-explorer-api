@@ -4,7 +4,7 @@ const { regexURL } = require('../helpers/constants');
 // валидация при добавлении нового пользователя
 const validateCreateUser = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
@@ -20,7 +20,7 @@ const validateLogin = celebrate({
 
 const validateUpdateUser = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
   }),
 });
@@ -28,8 +28,8 @@ const validateUpdateUser = celebrate({
 const validateCreateMovie = celebrate({
   body: Joi.object().keys({
     country: Joi.string().required(),
-    director: Joi.number().required(),
-    duration: Joi.string().required(),
+    director: Joi.string().required(),
+    duration: Joi.number().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
     image: Joi.string().required().regex(RegExp(regexURL)),
